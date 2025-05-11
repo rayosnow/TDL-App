@@ -1,5 +1,3 @@
-// service-worker.js
-
 const CACHE_NAME = 'tdl-cache-v1';
 const urlsToCache = [
   '/',
@@ -9,14 +7,14 @@ const urlsToCache = [
   '/icon-512.png'
 ];
 
-// Instalar y cachear
+// Instalación y caché de recursos
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// Activar y limpiar versiones viejas
+// Activación y limpieza de cachés antiguos
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(names =>
@@ -29,7 +27,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Interceptar peticiones
+// Intercepción de solicitudes
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(response =>
