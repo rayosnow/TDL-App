@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lista de Tareas</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <meta name="theme-color" content="#4a90e2" />
+  <style>
+    /* (Mismo CSS bonito para móviles del mensaje anterior) */
+    /* ... puedes pegar el mismo bloque de estilos que ya tienes */
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Mis Tareas</h1>
+    <div class="input-group">
+      <input type="text" id="nuevaTarea" placeholder="Escribe una tarea...">
+      <button onclick="agregarTarea()">Añadir</button>
+    </div>
+    <ul id="listaTareas"></ul>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+
+    let tareas = JSON.parse(localStorage.getItem('tareas')) || [];
+
+    function guardarTareas() {
+      localStorage.setItem('tareas', JSON.stringify(tareas));
+    }
+
+    function renderizarTareas() {
+      const lista = document.getElementById('listaTareas');
+      lista.innerHTML = '';
+      tareas.forEach((tarea, index) => {
+        const li = document.createElement('li');
+        li.className = tarea.hecha ? 'hecha' : '';
+        li.innerHTML = `
+          <span onclick="toggleTarea(${index})">${tarea.texto}</span>
+          <button onclick="eliminarTarea(${index})">✕</button>
+        `;
+        lista.appendChild(li);
+      });
+    }
+
+    function agregarTarea() {
+      const input = document.getElementById('nuevaTarea');
+      const texto = input.value.trim();
+      if (texto) {
+        tareas.push({ texto, hecha: false });
+        input.value = '';
+        guardarTareas();
+        renderizarTareas();
+      }
+    }
+
+    function toggleTarea(index) {
+      tareas[index].hecha = !tareas[index].hecha;
+      guardarTareas();
+      renderizarTareas();
+    }
+
+    function eliminarTarea(index) {
+      tareas.splice(index, 1);
+      guardarTareas();
+      renderizarTareas();
+    }
+
+    renderizarTareas();
+  </script>
+</body>
+</html>
